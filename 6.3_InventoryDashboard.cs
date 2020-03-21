@@ -54,7 +54,7 @@ namespace Session6_Kazan_Redo
                 var getDistinctDatesInitial = (from x in context.Orders
                                                where x.EmergencyMaintenance.EMStartDate != null && x.EmergencyMaintenance.EMEndDate != null
                                                orderby x.Date descending
-                                               select  x.Date ).ToList();
+                                               select x.Date).ToList();
                 var getDistinctDates = (from x in getDistinctDatesInitial
                                         select x.ToString("yyyy/MM")).Distinct().Take(10);
 
@@ -66,6 +66,7 @@ namespace Session6_Kazan_Redo
 
                 }
 
+                #region Populating 1st DGV
                 foreach (var departments in getDepartments)
                 {
                     var row = new List<string>();
@@ -119,7 +120,127 @@ namespace Session6_Kazan_Redo
                         }
                     }
                 }
+                #endregion
 
+                #region Populating 2nd DGV
+                var getDistinctParts = (from x in context.Parts
+                                        select x.Name).Distinct();
+                var highestCostRow = new List<string>() { "Highest Cost" };
+                var mostNumberRow = new List<string>() { "Most Number" };
+
+                foreach (var distinctDates in getDistinctDates)
+                {
+                    var highestCostDict = new Dictionary<string, decimal>();
+                    var mostNumberDict = new Dictionary<string, decimal>();
+                    foreach (var item in getDistinctParts)
+                    {
+                        var initialQuery = (from x in context.Orders
+                                            where x.EmergencyMaintenance.EMEndDate != null && x.EmergencyMaintenance.EMStartDate != null
+                                            select x).ToList();
+
+                        var getSpendings = (from x in initialQuery
+                                            where x.Date.ToString("yyyy/MM") == distinctDates
+                                            select x.OrderItems.Where(y => y.Part.Name == item).Sum(y => y.Amount * y.UnitPrice)).Sum();
+
+                        highestCostDict.Add(item, Convert.ToDecimal(getSpendings));
+
+                        var getAmount = (from x in initialQuery
+                                         where x.Date.ToString("yyyy/MM") == distinctDates
+                                         select x.OrderItems.Where(y => y.Part.Name == item).Sum(y => y.Amount)).Sum();
+                        mostNumberDict.Add(item, getAmount);
+                    }
+                    var getHighestCost = (from x in highestCostDict
+                                          orderby x.Value descending
+                                          where x.Value != 0
+                                          select x.Key).First();
+                    highestCostRow.Add(getHighestCost);
+                    var getMostNumber = (from x in mostNumberDict
+                                         orderby x.Value descending
+                                         where x.Value != 0
+                                         select x.Key).First();
+                    mostNumberRow.Add(getMostNumber);
+
+                }
+                dgvMostUsed.Rows.Add(highestCostRow.ToArray());
+                dgvMostUsed.Rows.Add(mostNumberRow.ToArray());
+                #endregion
+
+                #region Populating 3rd DGV
+                var assetRow = new List<string>() { "Asset" };
+                var departmentRow = new List<string>() { "Department" };
+                var getDistinctAssets = (from x in context.Assets
+                                         select x.AssetName).Distinct();
+                foreach (var distinctDates in getDistinctDates)
+                {
+                    var assetSpendings = new Dictionary<string, decimal>();
+                    var assetDepartment = new Dictionary<string, string>();
+                    foreach (var item in getDistinctAssets)
+                    {
+                        var initialQuery = (from x in context.Orders
+                                            where x.EmergencyMaintenance.EMEndDate != null && x.EmergencyMaintenance.EMStartDate != null
+                                            select x).ToList();
+                        var getAssetSpendings = (from x in initialQuery
+                                                 where x.Date.ToString("yyyy/MM") == distinctDates && x.EmergencyMaintenance.Asset.AssetName == item
+                                                 select x.OrderItems.Sum(y => y.Amount * y.UnitPrice)).Sum();
+
+                        var getAssetDepartment = (from x in context.Assets
+                                                  where x.AssetName == item
+                                                  select x.DepartmentLocation.Department.Name).FirstOrDefault();
+                        assetSpendings.Add(item, Convert.ToDecimal(getAssetSpendings));
+                        assetDepartment.Add(item, getAssetDepartment);
+
+                    }
+
+                    var getHighestSpendingAsset = (from x in assetSpendings
+                                                   where x.Value != 0
+                                                   orderby x.Value descending
+                                                   select x.Value).FirstOrDefault();
+                    var checkNumberofAssets = (from x in assetSpendings
+                                               where x.Value == getHighestSpendingAsset
+                                               select x.Key).ToList();
+
+                    if (checkNumberofAssets.Count == 1)
+                    {
+                        assetRow.Add(checkNumberofAssets.First());
+
+                        var getDepartment = (from x in assetDepartment
+                                             where x.Key == checkNumberofAssets.First()
+                                             select x.Value).First();
+                        departmentRow.Add(getDepartment);
+                    }
+                    else
+                    {
+                        var toAddAsset = string.Empty;
+                        var toAddDepartment = string.Empty;
+                        foreach (var item in checkNumberofAssets)
+                        {
+                            if (toAddAsset == string.Empty)
+                            {
+                                toAddAsset = item;
+
+                                var getDepartment = (from x in assetDepartment
+                                                     where x.Key == item
+                                                     select x.Value).First();
+                                toAddDepartment = getDepartment;
+                            }
+                            else
+                            {
+                                toAddAsset += $", {item}";
+
+                                var getDepartment = (from x in assetDepartment
+                                                     where x.Key == item
+                                                     select x.Value).First();
+                                toAddDepartment += $", {getDepartment}";
+                            }
+                        }
+                        assetRow.Add(toAddAsset);
+                        departmentRow.Add(toAddDepartment);
+                    }
+                    
+                }
+                dgvCostlyAssets.Rows.Add(assetRow.ToArray());
+                dgvCostlyAssets.Rows.Add(departmentRow.ToArray());
+                #endregion
 
             }
 
