@@ -236,10 +236,49 @@ namespace Session6_Kazan_Redo
                         assetRow.Add(toAddAsset);
                         departmentRow.Add(toAddDepartment);
                     }
-                    
+
                 }
                 dgvCostlyAssets.Rows.Add(assetRow.ToArray());
                 dgvCostlyAssets.Rows.Add(departmentRow.ToArray());
+                #endregion
+
+                #region Loading Piechart
+                cDepartmentSpendingRatio.Series.Add("Series0");
+                cDepartmentSpendingRatio.Series[0].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+                foreach (var departments in getDepartments)
+                {
+                    var getList = (from x in context.Orders
+                                   where x.EmergencyMaintenance.EMStartDate != null && x.EmergencyMaintenance.EMEndDate != null
+                                   where x.EmergencyMaintenance.Asset.DepartmentLocation.Department.Name == departments
+                                   select x).ToList();
+                    var getSpendings = (from x in getList
+                                        select x.OrderItems.Sum(z => z.Amount * z.UnitPrice)).Sum();
+                    var y = cDepartmentSpendingRatio.Series[0].Points.AddY(getSpendings);
+                    cDepartmentSpendingRatio.Series[0].Points[y].AxisLabel = departments;
+                }
+                #endregion
+
+                #region Loading Barchart
+                cMonthlyDepartmentSpending.ChartAreas[0].AxisX.LabelStyle.Interval = 1;
+                foreach (var departments in getDepartments)
+                {
+                    cMonthlyDepartmentSpending.Series.Add(departments);
+                    foreach (var distinctDates in getDistinctDates)
+                    {
+                        var getList = (from x in context.Orders
+                                       where x.EmergencyMaintenance.EMStartDate != null && x.EmergencyMaintenance.EMEndDate != null
+                                       where x.EmergencyMaintenance.Asset.DepartmentLocation.Department.Name == departments
+                                       select x).ToList();
+
+                        var getSpendings = (from x in getList
+                                            where x.Date.ToString("yyyy/MM") == distinctDates
+                                            select x.OrderItems.Sum(z => z.Amount * z.UnitPrice)).Sum();
+
+                        cMonthlyDepartmentSpending.Series[departments].Points.AddXY(distinctDates, getSpendings);
+
+
+                    }
+                }
                 #endregion
 
             }
