@@ -36,7 +36,7 @@ namespace Session6_Kazan_Redo
             dgvMostUsed.Rows.Clear();
             dgvMostUsed.Columns.Clear();
             dgvCostlyAssets.Rows.Clear();
-            dgvCostlyAssets.Rows.Clear();
+            dgvCostlyAssets.Columns.Clear();
             cDepartmentSpendingRatio.Series.Clear();
             cMonthlyDepartmentSpending.Series.Clear();
             #endregion
