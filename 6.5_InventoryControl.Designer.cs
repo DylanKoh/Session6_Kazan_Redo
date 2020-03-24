@@ -36,7 +36,7 @@
             this.btnAllocate = new System.Windows.Forms.Button();
             this.cbAllocationMethod = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.nupAmount = new System.Windows.Forms.NumericUpDown();
+            this.nudAmount = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
             this.cbPartName = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -49,13 +49,13 @@
             this.dgvAssignedParts = new System.Windows.Forms.DataGridView();
             this.btnSubmit = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
-            this.OrderItemID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PartID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PartName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.BatchNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.UnitPrice = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nupAmount)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudAmount)).BeginInit();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvAllocatedParts)).BeginInit();
             this.groupBox3.SuspendLayout();
@@ -106,7 +106,7 @@
             this.groupBox1.Controls.Add(this.btnAllocate);
             this.groupBox1.Controls.Add(this.cbAllocationMethod);
             this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.nupAmount);
+            this.groupBox1.Controls.Add(this.nudAmount);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.cbPartName);
             this.groupBox1.Controls.Add(this.label4);
@@ -152,24 +152,24 @@
             this.label6.TabIndex = 6;
             this.label6.Text = "Allocation Method: ";
             // 
-            // nupAmount
+            // nudAmount
             // 
-            this.nupAmount.DecimalPlaces = 2;
-            this.nupAmount.Increment = new decimal(new int[] {
+            this.nudAmount.DecimalPlaces = 2;
+            this.nudAmount.Increment = new decimal(new int[] {
             1,
             0,
             0,
             131072});
-            this.nupAmount.Location = new System.Drawing.Point(506, 51);
-            this.nupAmount.Margin = new System.Windows.Forms.Padding(2);
-            this.nupAmount.Maximum = new decimal(new int[] {
+            this.nudAmount.Location = new System.Drawing.Point(506, 51);
+            this.nudAmount.Margin = new System.Windows.Forms.Padding(2);
+            this.nudAmount.Maximum = new decimal(new int[] {
             1215752192,
             23,
             0,
             0});
-            this.nupAmount.Name = "nupAmount";
-            this.nupAmount.Size = new System.Drawing.Size(73, 20);
-            this.nupAmount.TabIndex = 5;
+            this.nudAmount.Name = "nudAmount";
+            this.nudAmount.Size = new System.Drawing.Size(73, 20);
+            this.nudAmount.TabIndex = 5;
             // 
             // label5
             // 
@@ -243,6 +243,7 @@
             this.btnAssignToEM.TabIndex = 1;
             this.btnAssignToEM.Text = "+ Assign to EM";
             this.btnAssignToEM.UseVisualStyleBackColor = true;
+            this.btnAssignToEM.Click += new System.EventHandler(this.btnAssignToEM_Click);
             // 
             // dgvAllocatedParts
             // 
@@ -280,7 +281,7 @@
             this.dgvAssignedParts.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dgvAssignedParts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvAssignedParts.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.OrderItemID,
+            this.PartID,
             this.PartName,
             this.BatchNumber,
             this.UnitPrice,
@@ -294,6 +295,7 @@
             this.dgvAssignedParts.RowTemplate.Height = 24;
             this.dgvAssignedParts.Size = new System.Drawing.Size(860, 145);
             this.dgvAssignedParts.TabIndex = 0;
+            this.dgvAssignedParts.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvAssignedParts_CellContentClick);
             // 
             // btnSubmit
             // 
@@ -304,6 +306,7 @@
             this.btnSubmit.TabIndex = 6;
             this.btnSubmit.Text = "Submit";
             this.btnSubmit.UseVisualStyleBackColor = true;
+            this.btnSubmit.Click += new System.EventHandler(this.btnSubmit_Click);
             // 
             // btnClose
             // 
@@ -316,13 +319,13 @@
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
-            // OrderItemID
+            // PartID
             // 
-            this.OrderItemID.HeaderText = "OrderItemID";
-            this.OrderItemID.Name = "OrderItemID";
-            this.OrderItemID.ReadOnly = true;
-            this.OrderItemID.Visible = false;
-            this.OrderItemID.Width = 89;
+            this.PartID.HeaderText = "PartID";
+            this.PartID.Name = "PartID";
+            this.PartID.ReadOnly = true;
+            this.PartID.Visible = false;
+            this.PartID.Width = 62;
             // 
             // PartName
             // 
@@ -371,7 +374,7 @@
             this.Load += new System.EventHandler(this.InventoryControl_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nupAmount)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudAmount)).EndInit();
             this.groupBox2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvAllocatedParts)).EndInit();
             this.groupBox3.ResumeLayout(false);
@@ -395,7 +398,7 @@
         private System.Windows.Forms.Button btnAllocate;
         private System.Windows.Forms.ComboBox cbAllocationMethod;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.NumericUpDown nupAmount;
+        private System.Windows.Forms.NumericUpDown nudAmount;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox cbPartName;
         private System.Windows.Forms.Label label4;
@@ -404,7 +407,7 @@
         private System.Windows.Forms.DataGridView dgvAllocatedParts;
         private System.Windows.Forms.Button btnAssignToEM;
         private System.Windows.Forms.DataGridView dgvAssignedParts;
-        private System.Windows.Forms.DataGridViewTextBoxColumn OrderItemID;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PartID;
         private System.Windows.Forms.DataGridViewTextBoxColumn PartName;
         private System.Windows.Forms.DataGridViewTextBoxColumn BatchNumber;
         private System.Windows.Forms.DataGridViewTextBoxColumn UnitPrice;
